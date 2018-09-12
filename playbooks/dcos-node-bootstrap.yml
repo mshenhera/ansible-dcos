@@ -8,5 +8,5 @@
     - common
     - docker
     - journald
-    - { role: mount-nfs, when: "masters" != node_group_name }
+    - { role: mount-nfs, when: "'masters' != node_group_name" }
     - node-install
