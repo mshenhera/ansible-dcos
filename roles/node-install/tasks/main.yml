@@ -20,7 +20,7 @@
     chdir: "{{ dcos_path_tmp }}"
   when:
     - currently_installed.matched|int == 0
-    - 'masters' == node_group_name
+    - "'masters' == node_group_name"
 
 - name: install agent
   shell: bash dcos_install.sh slave
@@ -28,7 +28,7 @@
     chdir: "{{ dcos_path_tmp }}"
   when:
     - currently_installed.matched|int == 0
-    - 'agents' == node_group_name
+    - "'agents' == node_group_name"
 
 - name: install public agent
   shell: bash dcos_install.sh slave_public
@@ -36,4 +36,4 @@
     chdir: "{{ dcos_path_tmp }}"
   when:
     - currently_installed.matched|int == 0
-    - 'agent_publics' == node_group_name
+    - "'agent_publics' == node_group_name"
