@@ -1,0 +1,15 @@
+---
+- name: Fix cgroup for cadvisor
+  stat:
+    path: "/sys/fs/cgroup/cpuacct,cpu"
+  register: cpu_link
+
+- name: run cgroup remount
+  shell: mount -o remount,rw '/sys/fs/cgroup'
+  when: cpu_link.stat.exists == False
+
+- name: create cpu,cpuacct symlink
+  file:
+    src: /sys/fs/cgroup/cpu,cpuacct
+    path: /sys/fs/cgroup/cpuacct,cpu
+    state: link

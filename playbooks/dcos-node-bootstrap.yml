@@ -1,0 +1,12 @@
+# vim:ft=ansible:
+---
+
+# Install DC/OS node
+- name: Execute role
+  hosts: localhost
+  roles:
+    - common
+    - docker
+    - journald
+    - mount-nfs
+    - node-install

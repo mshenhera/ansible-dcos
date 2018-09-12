@@ -1,0 +1,28 @@
+# vim:ft=ansible:
+---
+
+- name: Installing nfs-utils
+  yum:
+    name: "{{item}}"
+  with_items:
+    - nfs-utils
+
+- name: Create folder to mount nfs share to
+  file:
+    mode: 0777
+    path: "{{ nfs_mount_dir }}"
+    state: directory
+
+- name: mount nfs volume
+  mount:
+    path: "{{ nfs_mount_dir }}"
+    src: "{{ nfs_share }}"
+    fstype: "{{ nfs_share_fstype }}"
+    opts: "{{ nfs_mount_options }}"
+    state: mounted
+
+- name: Create cross environment symlink /nfs
+  file:
+    src: "{{ nfs_mount_dir }}"
+    dest: "{{ nfs_cross_env_link }}"
+    state: link

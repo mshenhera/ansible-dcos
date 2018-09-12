@@ -1,0 +1,2 @@
+journald_systemd_file: /etc/systemd/journald.conf
+system_max_use: 100M
