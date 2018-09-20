@@ -1,0 +1,23 @@
+# vim:ft=ansible:
+---
+
+- name: restart filebeat
+  service:
+    name: dcos-filebeat
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: restart dcos-journalctl
+  service:
+    name: dcos-journalctl-filebeat
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: restart logrotate
+  service:
+    name: logrotate
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

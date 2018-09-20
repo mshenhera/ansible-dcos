@@ -1,0 +1,47 @@
+# vim:ft=ansible:
+---
+
+- name: create home directory
+  file:
+    state: directory
+    path: /opt/filebeat
+
+- name: configure filebeat
+  template:
+    src: filebeat.yml.j2
+    dest: "{{ filebeat_conf_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart filebeat
+
+- name: configure service file
+  template:
+    src: systemd/dcos-filebeat.service.j2
+    dest: "{{ filebeat_systemd_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart filebeat
+
+- name: start filebeat
+  systemd:
+    name: dcos-filebeat
+    state: started
+    daemon_reload: yes
+
+- name: Setup dcos journalctl to write logs to file
+  import_tasks: dcos-journalctl.yml
+  when: enable_dcos_logging
+
+- name: Setup logrotation on CoreOS for dcos log file
+  import_tasks: logrotate/coreos.yml
+  when:
+    - ansible_os_family == "Container Linux by CoreOS"
+    - enable_dcos_logging
+
+- name: Setup logrotation on CentOS for dcos log file
+  import_tasks: logrotate/centos.yml
+  when:
+    - ansible_os_family|lower == "centos"
+    - enable_dcos_logging

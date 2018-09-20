@@ -10,3 +10,4 @@
     - journald
     - { role: mount-nfs, when: "'masters' != node_group_name" }
     - node-install
+    - { role: dcos-filebeat, when: "'masters' != node_group_name" }

@@ -1,0 +1,17 @@
+# Managed by Ansible
+
+[Unit]
+Description=Filebeat Container
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-{{ docker_exec }} stop %n
+ExecStartPre=-{{ docker_exec }} rm %n
+ExecStartPre={{ docker_exec }} pull {{ filebeat_docker_image }}
+ExecStart={{ docker_exec }} run --rm --user root -v {{ filebeat_conf_file }}:/usr/share/filebeat/filebeat.yml -v /var/lib/mesos:/var/lib/mesos -v /var/log/mesos:/var/log/mesos -v /var/log/dcos:/var/log/dcos --name %n {{ filebeat_docker_image }}
+
+[Install]
+WantedBy=multi-user.target

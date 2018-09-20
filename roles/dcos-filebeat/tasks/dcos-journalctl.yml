@@ -1,0 +1,17 @@
+# vim:ft=ansible:
+---
+
+- name: configure dcos-journalctl service file
+  template:
+    src: systemd/dcos-journalctl-filebeat.service.j2
+    dest: "{{ dcos_journalctl_systemd_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart dcos-journalctl
+
+- name: start dcos-journalctl
+  systemd:
+    name: dcos-journalctl-filebeat
+    state: started
+    daemon_reload: yes

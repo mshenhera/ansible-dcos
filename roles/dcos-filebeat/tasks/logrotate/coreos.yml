@@ -1,0 +1,29 @@
+# vim:ft=ansible:
+---
+
+- name: configure logrotate
+  template:
+    src: coreos/logrotate.conf.j2
+    dest: "{{ logrotate_conf_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart logrotate
+
+- name: configure logrotate service file
+  template:
+    src: systemd/logrotate.service.j2
+    dest: "{{ logrotate_systemd_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart logrotate
+
+- name: configure logrotate timer file
+  template:
+    src: systemd/logrotate.timer.j2
+    dest: "{{ logrotate_systemd_timer_file }}"
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart logrotate

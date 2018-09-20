@@ -1,0 +1,20 @@
+
+filebeat_version: 6.3.2
+filebeat_docker_image: "docker.elastic.co/beats/filebeat:{{ filebeat_version }}"
+filebeat_home_dir: /opt/filebeat
+filebeat_conf_file: "{{ filebeat_home_dir }}/filebeat.yml"
+filebeat_systemd_file: /etc/systemd/system/dcos-filebeat.service
+
+docker_exec: /bin/docker
+
+logstash_endpoint: elklogstash.marathon.l4lb.thisdcos.directory:5044
+
+enable_mesos_logging: true
+enable_dcos_logging: true
+enable_marathon_lb_logging: true
+enable_traefik_logging: true
+dcos_journalctl_systemd_file: /etc/systemd/system/dcos-journalctl-filebeat.service
+
+logrotate_conf_file: /etc/logrotate.d/logrotate.conf
+logrotate_systemd_file: /etc/systemd/system/logrotate.service
+logrotate_systemd_timer_file: /etc/systemd/system/logrotate.timer

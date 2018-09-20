@@ -1,0 +1,65 @@
+filebeat:
+  prospectors:
+    - type: log
+      paths:
+        - /var/lib/mesos/slave/slaves/*/frameworks/*/executors/*/runs/latest/stdout*
+        - /var/lib/mesos/slave/slaves/*/frameworks/*/executors/*/runs/latest/stderr*
+      exclude_files: ['.*traefik.*', '.*marathon-lb.*', '.*monitoring_.*', '.*elk_.*', "stdout.logrotate.state", 'stdout.logrotate.conf', "stderr.logrotate.state", "stderr.logrotate.conf"]
+      # multiline configuration for Java stack traces
+      multiline:
+        pattern: '^[[:space:]]+(at|\.{3})\b|^Caused by:'
+        negate: false
+        match: after
+      tail_files: true
+      fields_under_root: true
+      fields:
+        dcos_node: {{ ansible_default_ipv4.address }}
+{% if enable_marathon_lb_logging %}
+    - type: log
+      paths:
+        - /var/lib/mesos/slave/slaves/*/frameworks/*/executors/marathon-lb.*/runs/latest/stdout*
+        - /var/lib/mesos/slave/slaves/*/frameworks/*/executors/marathon-lb.*/runs/latest/stderr*
+      exclude_files: ["stdout.logrotate.state", 'stdout.logrotate.conf', "stderr.logrotate.state", "stderr.logrotate.conf"]
+      # multiline configuration for Java stack traces
+      multiline:
+        pattern: '^[[:space:]]+(at|\.{3})\b|^Caused by:'
+        negate: false
+        match: after
+      tail_files: true
+      fields_under_root: true
+      fields:
+        dcos_node: {{ ansible_default_ipv4.address }}
+{% endif %}
+{% if enable_traefik_logging %}
+    - type: log
+      paths:
+        - /var/lib/mesos/slave/slaves/*/frameworks/*/executors/traefik.*/runs/latest/stdout*
+        - /var/lib/mesos/slave/slaves/*/frameworks/*/executors/traefik.*/runs/latest/stderr*
+      exclude_files: ["stdout.logrotate.state", 'stdout.logrotate.conf', "stderr.logrotate.state", "stderr.logrotate.conf"]
+      tail_files: true
+      fields_under_root: true
+      fields:
+        dcos_node: {{ ansible_default_ipv4.address }}
+{% endif %}
+{% if enable_mesos_logging %}
+    - type: log
+      paths:
+        - /var/log/mesos/*.log
+      tail_files: true
+      fields_under_root: true
+      fields:
+        dcos_node: {{ ansible_default_ipv4.address }}
+        dcos_service: mesos
+{% endif %}
+{% if enable_dcos_logging %}
+    - type: log
+      paths:
+        - /var/log/dcos/dcos.log
+      tail_files: true
+      fields_under_root: true
+      fields:
+        dcos_node: {{ ansible_default_ipv4.address }}
+        dcos_service: dcos
+{% endif %}
+output.logstash:
+  hosts: ["{{ logstash_endpoint }}"]
